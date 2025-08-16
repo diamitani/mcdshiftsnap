@@ -1,0 +1,9 @@
+# Dependencies
+/node_modules
+
+# Output files
+*.png
+*.pdf
+
+# Environment variables
+.env
