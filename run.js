@@ -5,13 +5,11 @@ const fs = require('fs');
     let browser = null;
     let page = null;
     try {
-        console.log("Launching browser with PDF viewer...");
-        // Launch a full browser instance to get the PDF viewer extension
-        browser = await playwright.chromium.launch({ headless: false }); 
+        console.log("Launching browser for local execution...");
+        browser = await playwright.chromium.launch({ headless: false }); // Use non-headless for local
         const context = await browser.newContext({
             viewport: { width: 1600, height: 1000 },
-            // This ensures that PDFs are opened in the browser, not downloaded
-            acceptDownloads: false,
+            acceptDownloads: false, // Ensure PDF viewer is used
             timezoneId: 'America/Chicago',
         });
         page = await context.newPage();
@@ -119,11 +117,16 @@ const fs = require('fs');
         const newPage = await pagePromise;
         await newPage.waitForLoadState('domcontentloaded');
 
-        console.log("10) Waiting for PDF generation to finish...");
-        await newPage.getByText("Generating PDF...").waitFor({ state: "hidden", timeout: 120000 });
+        console.log("10) Waiting for 'Generating PDF...' text to disappear...");
+        try {
+            await newPage.getByText("Generating PDF...", { exact: false }).waitFor({ state: "hidden", timeout: 120000 });
+            console.log("'Generating PDF...' text has disappeared.");
+        } catch (e) {
+            console.log("Warning: 'Generating PDF...' text did not disappear within timeout.");
+        }
         
-        console.log("11) Waiting for report to render...");
-        await newPage.waitForTimeout(15000);
+        console.log("11) Adding a 30-second fixed delay for complete rendering...");
+        await newPage.waitForTimeout(30000);
 
         console.log("12) Capturing full-page screenshot of PDF view");
         await newPage.waitForLoadState("networkidle");

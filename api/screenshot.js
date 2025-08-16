@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
         browser = await playwright.launchChromium({ headless: true });
         const context = await browser.newContext({
             viewport: { width: 1600, height: 1000 },
-            acceptDownloads: false, // This is important for Vercel
+            acceptDownloads: false, // Crucial for Vercel to use viewer
             timezoneId: 'America/Chicago',
         });
         page = await context.newPage();
@@ -128,8 +128,8 @@ module.exports = async (req, res) => {
             console.log("Warning: 'Generating PDF...' text did not disappear within timeout.");
         }
         
-        console.log("11) Adding a 15-second fixed delay for rendering...");
-        await newPage.waitForTimeout(15000);
+        console.log("11) Adding a 30-second fixed delay for complete rendering...");
+        await newPage.waitForTimeout(30000);
 
         console.log("12) Capturing full-page screenshot of PDF view");
         await newPage.waitForLoadState("networkidle");
