@@ -1,13 +1,14 @@
-const playwright = require('playwright');
+const playwright = require('playwright-aws-lambda');
 
 module.exports = async (req, res) => {
     let browser = null;
     let page = null;
     try {
-        console.log("Launching browser...");
-        browser = await playwright.chromium.launch({ headless: true });
+        console.log("Launching browser in Vercel environment...");
+        browser = await playwright.launchChromium({ headless: true });
         const context = await browser.newContext({
             viewport: { width: 1600, height: 1000 },
+            acceptDownloads: false, // This is important for Vercel
             timezoneId: 'America/Chicago',
         });
         page = await context.newPage();
